@@ -39,18 +39,6 @@ public class Main {
 
             stmt = conn.createStatement();
 
-//            For Testing
-//            ResultSet rs = stmt.executeQuery("select * from instructor");
-//
-//            while(rs.next()){
-//
-//                System.out.println(rs.getString(1));
-//            }
-//            conn.close();
-
-//            if (IsInstructorAndAuthenticate(conn)){
-//
-//            }
         authenticate(conn);
 
         if(isInstructor){
@@ -58,8 +46,8 @@ public class Main {
             System.out.println("Instructor");
         }else {
 //            TODO: SHOW Student MENU HERE
-//            StudentMenu.studentMenu(stmt, );
-            System.out.println("Student");
+            StudentMenu.studentMenu(conn, userID);
+//            System.out.println("Student");
         }
 
 
