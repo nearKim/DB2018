@@ -14,7 +14,7 @@ public class StudentMenu {
     static final String DB_USER = "";
     static final String DB_PASS = "";
 
-    private static void StudentMenu(Statement stmt, String id, String name) {
+    public static void studentMenu(Statement stmt, String id) {
         System.out.println("Please select student menu");
         System.out.println("1) Student report");
         System.out.println("2) View time table");
@@ -26,17 +26,18 @@ public class StudentMenu {
             case 0:
                 break;
             case 1:
+                System.out.println("Student Menu");
                 // TODO: implement below
-                StudentReport(stmt, id, name);
+                studentReport(stmt, id);
                 break;
             case 2:
                 // TODO: implement below
-                TimeTable(stmt, id, name);
+//                TimeTable(stmt, id);
                 break;
         }
     }
 
-    private static void StudentReport(Statement stmt, String id, String name) {
+    private static void studentReport(Statement stmt, String id) {
         String reportIntro = "Welcome %s . \n You are a member of %s \n You have taken total %d credits. \n\n Semester Report \n\n";
 
 

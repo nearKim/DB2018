@@ -4,39 +4,63 @@ import java.sql.*;
 import java.util.Scanner;
 
 public class Main {
-    // TODO: fill in below vars
-    // ODBC Driver and db url
-    static final String JDBC_DRIVER="";
-    static final String DB_URL="jdbc:oracle:thin:@localhost:1521:orcl";
+
+    // JDBC Driver and db url
+    static final String JDBC_DRIVER="oracle.jdbc.driver.OracleDriver";
+    static final String DB_URL="jdbc:oracle:thin:@localhost:1521:xe";
 
     // DB Credentials
-    static final String DB_NAME="";
-    static final String DB_USER="";
-    static final String DB_PASS="";
+    static final String DB_USER="system";
+    static final String DB_PASS="oracle";
 
-    public boolean userType;
+    // True means an instructor
+    public static boolean isInstructor;
+    public static String userID;
+
 
     public static void main(String[] args) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        Statement stmt = null;
+
         try{
-            Class.forName("oracle.jdbc.driver.OracleDriver");
+            Class.forName(JDBC_DRIVER);
         }catch (ClassNotFoundException e){
             System.out.println("Unable to load driver class");
             e.printStackTrace();
         }
 
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        Statement stmt = null;
 
 
         try{
             System.out.println("Connecting to database...");
-            conn = DriverManager.getConnection(DB_URL+DB_NAME, DB_USER, DB_PASS);
+            conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+//            conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 
-            if (IsInstructorAndAuthenticate(conn)){
+            stmt = conn.createStatement();
+
+//            For Testing
+//            ResultSet rs = stmt.executeQuery("select * from instructor");
 //
-            }
+//            while(rs.next()){
+//
+//                System.out.println(rs.getString(1));
+//            }
+//            conn.close();
 
+//            if (IsInstructorAndAuthenticate(conn)){
+//
+//            }
+        authenticate(conn);
+
+        if(isInstructor){
+//            TODO: SHOW INSTRUCTOR MENU HERE
+            System.out.println("Instructor");
+        }else {
+//            TODO: SHOW Student MENU HERE
+//            StudentMenu.studentMenu(stmt, );
+            System.out.println("Student");
+        }
 
 
         }catch (SQLException e){
@@ -50,19 +74,19 @@ public class Main {
 
     }
 
-    public static boolean IsInstructorAndAuthenticate(Connection connection){
+    public static void authenticate(Connection connection){
         String id, name;
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Welcome\n");
         System.out.println("ID: ");
-        id = scanner.nextLine();
+        id = scanner.nextLine().toString();
 
         System.out.println("Name: ");
-        name = scanner.nextLine();
+        name = scanner.nextLine().toString();
 
-        String instructorSql = "SELECT ID, name FROM instructor WHERE ID = ? AND name = ? ;";
-        String studentSql = "SELECT ID, name FROM student WHERE ID = ? AND name = ? ;";
+        String instructorSql = "SELECT ID, name FROM instructor WHERE ID = ? AND name = ?";
+        String studentSql = "SELECT ID, name FROM student WHERE ID = ? AND name = ?";
 
         try {
 
@@ -75,32 +99,35 @@ public class Main {
             pstmtStudent.setString(1, id);
             pstmtStudent.setString(2, name);
 
+            ResultSet rsInstructor = pstmtInstructor.executeQuery();
+            ResultSet rsStudent = pstmtStudent.executeQuery();
 
-            ResultSet rsInstructor = pstmtInstructor.executeQuery(instructorSql);
-            ResultSet rsStudent = pstmtStudent.executeQuery(studentSql);
-
-
-            if(!rsInstructor.first() && !rsStudent.first()){
+            if(!rsInstructor.isBeforeFirst() && !rsStudent.isBeforeFirst()){
                 // Not authenticated
                 System.out.println("Wrong authentication. Try Again");
-                IsInstructorAndAuthenticate(connection);
+                authenticate(connection);
 
-            } else if(rsInstructor.first() && rsStudent.first()){
+            } else if(rsInstructor.isBeforeFirst() && rsStudent.isBeforeFirst()){
                 System.out.println("Data Corrupted");
 
-            } else if(rsInstructor.first()) {
-//                True means this ID belongs to instructor
-                return true;
+            } else if(rsInstructor.isBeforeFirst()) {
+                rsInstructor.next();
+                System.out.println(rsInstructor.getString(1));
+                isInstructor = true;
+                userID = rsInstructor.getString(1);
+            } else{
+                rsStudent.next();
+                isInstructor =false;
+                userID = rsStudent.getString(1);
             }
         }catch (SQLException e){
             System.out.println("SQL Exception occurred");
             e.printStackTrace();
         }
-        return false;
-    }
-
 
     }
 
+    }
 
-}
+
+
