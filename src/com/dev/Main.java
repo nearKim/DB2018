@@ -19,18 +19,18 @@ public class Main {
 
 
     public static void main(String[] args) {
+        // initialize variables
         Connection conn = null;
         PreparedStatement pstmt = null;
         Statement stmt = null;
 
+        // Register driver
         try{
             Class.forName(JDBC_DRIVER);
         }catch (ClassNotFoundException e){
             System.out.println("Unable to load driver class");
             e.printStackTrace();
         }
-
-
 
         try{
             System.out.println("Connecting to database...");
@@ -39,15 +39,15 @@ public class Main {
 
             stmt = conn.createStatement();
 
-        authenticate(conn);
+            // 1. Authenticate user and set isInstructor flag
+            authenticate(conn);
 
-        if(isInstructor){
+            if(isInstructor){
 //            TODO: SHOW INSTRUCTOR MENU HERE
-            System.out.println("Instructor");
-        }else {
+                System.out.println("Instructor");
+            }else {
 //            TODO: SHOW Student MENU HERE
-            StudentMenu.studentMenu(conn, userID);
-//            System.out.println("Student");
+                StudentMenu.studentMenu(conn, userID);
         }
 
 
@@ -63,6 +63,17 @@ public class Main {
     }
 
     public static void authenticate(Connection connection){
+        /**
+         * Show authentication prompt after connected to local DB.
+         * Input ID and Name are validated by searching both studnet and instructor relation.
+         *
+         * If both results are empty, reauthenticate by re-calling this method.
+         * Else if both results are non-empty, there exists a tuple both on two relations. Hence corrupted data.
+         * Else, if only one of the result is empty, set userType corresponding to the name of the relation that
+         * returned non-empty result.
+         * @return void
+         * @exception when sql exception occurs
+         */
         String id, name;
         Scanner scanner = new Scanner(System.in);
 
