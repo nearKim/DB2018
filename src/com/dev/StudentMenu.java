@@ -54,7 +54,13 @@ public class StudentMenu {
         ArrayList<String> selections = new ArrayList<>();
 
         String sql = "SELECT year, semester FROM takes WHERE id = ? " +
-                "GROUP BY year, semester ORDER BY year DESC";
+                "     GROUP BY year, semester " +
+                "     ORDER BY year DESC, CASE semester\n"+
+                "                       WHEN 'Spring' THEN 1\n" +
+                "                       WHEN 'Summer' THEN 2\n" +
+                "                       WHEN 'Fall' THEN 3\n" +
+                "                       WHEN 'Winter' THEN 4\n" +
+                "                       END DESC";
 
         try {
             PreparedStatement pstmt = connection.prepareStatement(sql);
@@ -96,14 +102,14 @@ public class StudentMenu {
          * @return void
          */
         String sql =
-                "select course.course_id, course.title, time_slot.day, time_slot.start_hr || ':' || time_slot.start_min as start_time, time_slot.end_hr || ':' || time_slot.end_min as end_time " +
-                "from section inner join takes " +
-                "on takes.sec_id = section.sec_id and takes.course_id=section.course_id  " +
-                "inner join time_slot " +
-                "on section.time_slot_id=time_slot.time_slot_id " +
-                "inner join course " +
-                "on course.course_id = takes.course_id " +
-                "where takes.id= ? and takes.year= ? and takes.semester= ?";
+                "SELECT course.course_id, course.title, time_slot.day, time_slot.start_hr || ':' || time_slot.start_min as start_time, time_slot.end_hr || ':' || time_slot.end_min as end_time " +
+                "FROM section INNER JOIN takes " +
+                "ON takes.sec_id = section.sec_id AND takes.course_id=section.course_id  " +
+                "INNER JOIN time_slot " +
+                "ON section.time_slot_id=time_slot.time_slot_id " +
+                "INNER JOIN course " +
+                "ON course.course_id = takes.course_id " +
+                "WHERE takes.id= ? AND takes.year= ? AND takes.semester= ?";
         try {
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setString(1,id);
