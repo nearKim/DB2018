@@ -32,12 +32,45 @@ public class InstructorMenu {
 
             case 2:
                 // TODO: implement below
-//                adviseeReport(connection, id);
+                adviseeReport(connection, id);
                 break;
         }
     }
 
+    private static void adviseeReport(Connection connection, String id) {
+        /**
+         * Show advisee Report for selected instructor
+         * Refer to the below SQL.
+         */
+        String sql = "SELECT ID, name, dept_name, tot_cred\n" +
+                "FROM student\n" +
+                "WHERE ID in (\n" +
+                "    SELECT S_ID\n" +
+                "    FROM advisor\n" +
+                "    WHERE I_ID=?\n" +
+                ")";
+        try{
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            pstmt.setString(1, id);
+
+            ResultSet rs = pstmt.executeQuery();
+            System.out.println("ID\t\tname\t dept_name\ttot_cred");
+            while (rs.next()){
+                System.out.print(rs.getString(1)+"\t");
+                System.out.print(rs.getString(2)+"\t\t");
+                System.out.print(rs.getString(3)+"\t");
+                System.out.println(rs.getString(4)+"\t");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static void courseReport(Connection connection, String id) {
+        /**
+         * Show courseReport like #6 on HW# Spec pdf
+         * Refer to the SQL below
+         */
         String sql = "WITH courses AS(SELECT course_ID, sec_ID\n" +
                 "    FROM teaches NATURAL JOIN (SELECT * FROM (SELECT *\n" +
                 "        FROM teaches\n" +
@@ -53,19 +86,29 @@ public class InstructorMenu {
                 "      FROM courses NATURAL JOIN section NATURAL JOIN time_slot NATURAL JOIN course),\n" +
                 "     (SELECT ID, name, dept_name, grade\n" +
                 "      FROM courses NATURAL JOIN section NATURAL JOIN takes NATURAL JOIN student)";
+        String yearSem = "select year , semester from teaches where ID = ? order by year desc, semester desc";
+
         try{
             PreparedStatement pstmt = connection.prepareStatement(sql);
+            PreparedStatement pyearsem = connection.prepareStatement(yearSem);
             pstmt.setString(1, id);
+            pyearsem.setString(1, id);
 
             ResultSet rs = pstmt.executeQuery();
+            ResultSet rs2 = pyearsem.executeQuery();
+            rs2.next();
+            System.out.println("Course Report - " + rs2.getString(1) +" "+ rs2.getString(2));
             while(rs.next()){
-                System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));
-                System.out.print(rs.getString(3));
+                System.out.print(rs.getString(1)+"\t");
+                System.out.print(rs.getString(2)+"\t");
+                System.out.print(rs.getString(3)+"\t");
                 System.out.print(rs.getString(4));
                 System.out.println(rs.getString(5));
-//                System.out.println(rs.getString(6));
-//                System.out.println(rs.getString(7));
+                System.out.println("ID\t\tname\tdept_name grade");
+                System.out.print(rs.getString(6)+"\t");
+                System.out.print(rs.getString(7)+"\t");
+                System.out.print(rs.getString(8)+"\t");
+                System.out.println(rs.getString(9) +"\n");
             }
         }catch (SQLException e){
             e.printStackTrace();
