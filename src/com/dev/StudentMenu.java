@@ -1,12 +1,9 @@
 package com.dev;
 
-import oracle.jdbc.proxy.annotation.Pre;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.stream.Stream;
 
 public class StudentMenu {
 
