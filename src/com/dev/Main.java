@@ -43,10 +43,8 @@ public class Main {
             authenticate(conn);
 
             if(isInstructor){
-//            TODO: SHOW INSTRUCTOR MENU HERE
-                System.out.println("Instructor");
+                InstructorMenu.instructorMenu(conn, userID);
             }else {
-//            TODO: SHOW Student MENU HERE
                 StudentMenu.studentMenu(conn, userID);
         }
 
