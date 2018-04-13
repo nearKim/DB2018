@@ -26,12 +26,10 @@ public class InstructorMenu {
                 break;
 
             case 1:
-                // TODO: implement below
                 courseReport(connection, id);
                 break;
 
             case 2:
-                // TODO: implement below
                 adviseeReport(connection, id);
                 break;
         }

@@ -29,12 +29,10 @@ public class StudentMenu {
                 break;
 
             case 1:
-                // TODO: implement below
                 studentReport(connection, id);
                 break;
 
             case 2:
-                // TODO: implement below
                 showTimeTable(connection, id);
                 break;
         }
@@ -150,6 +148,7 @@ public class StudentMenu {
         try {
             PreparedStatement yearSemPstmt = connection.prepareStatement(sql);
             PreparedStatement introPstmt = connection.prepareStatement(introSql);
+
             yearSemPstmt.setString(1, id);
             introPstmt.setString(1, id);
             ResultSet rsYearSem = yearSemPstmt.executeQuery();
@@ -162,8 +161,6 @@ public class StudentMenu {
 
             while(rsYearSem.next()){
                 printReport(connection, id, rsYearSem.getInt("year"), rsYearSem.getString("semester"));
-//                System.out.println(rsYearSem.getString("year"));
-//                System.out.println(rsYearSem.getString("semester"));
 
             }
 
@@ -172,7 +169,14 @@ public class StudentMenu {
         }
     }
     public static void  printReport(Connection connection, String id, int year, String semester){
-
+        /**
+         * Print specific report of the specific year and semester
+         * @param connection Connection object connecting the DB
+         * @param id User id
+         * @param year year of which this report would report
+         * @param semester semester of which this report would report
+         * @return void
+         */
         String sql = "WITH taken AS (SELECT name, student.dept_name AS s_dept, tot_cred, year, semester, course_ID, title, course.dept_name AS c_dept, credits, grade\n" +
                 "               FROM student NATURAL JOIN takes JOIN course USING(course_ID)\n" +
                 "               WHERE ID=?)\n" +

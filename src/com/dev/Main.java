@@ -35,13 +35,13 @@ public class Main {
         try{
             System.out.println("Connecting to database...");
             conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
-//            conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 
             stmt = conn.createStatement();
 
             // 1. Authenticate user and set isInstructor flag
             authenticate(conn);
 
+            // 2. Show menu
             if(isInstructor){
                 InstructorMenu.instructorMenu(conn, userID);
             }else {
@@ -105,16 +105,18 @@ public class Main {
                 authenticate(connection);
 
             } else if(rsInstructor.isBeforeFirst() && rsStudent.isBeforeFirst()){
+                // Appears on both relation? Corrupted data
                 System.out.println("Data Corrupted");
 
             } else if(rsInstructor.isBeforeFirst()) {
+                // Appears only on instructor relation
                 rsInstructor.next();
-                System.out.println(rsInstructor.getString(1));
                 isInstructor = true;
                 userID = rsInstructor.getString(1);
             } else{
+                // Appears only on student relation
                 rsStudent.next();
-                isInstructor =false;
+                isInstructor = false;
                 userID = rsStudent.getString(1);
             }
         }catch (SQLException e){
